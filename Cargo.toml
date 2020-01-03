@@ -1,0 +1,25 @@
+[package]
+name = "http-endpoint"
+version = "0.0.0"
+authors = ["Daniel Mueller <deso@posteo.net>"]
+edition = "2018"
+license = "GPL-3.0-or-later"
+homepage = "https://github.com/d-e-s-o/http-endpoint"
+repository = "https://github.com/d-e-s-o/http-endpoint.git"
+readme = "README.md"
+description = """
+Declarative specification of HTTP endpoints.
+"""
+
+[dependencies]
+hyper = {version = "0.13", default-features = false}
+serde = {version = "1.0", default-features = false, features = ["derive"]}
+serde_json = {version = "1.0.45", default-features = false, features = ["std"]}
+
+[dev-dependencies]
+env_logger = {version = "0.7", default-features = false}
+hyper = {version = "0.13", default-features = false, features = ["tcp"]}
+hyper-tls = {version = "0.4", default-features = false}
+test-env-log = {version = "0.2", default-features = false}
+tokio = {version = "0.2", default-features = false, features = ["rt-core", "macros"]}
+url = {version = "2.0", default-features = false}
