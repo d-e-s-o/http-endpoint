@@ -5,6 +5,7 @@ http-endpoint
 =============
 
 - [Documentation][docs-rs]
+- [Changelog](CHANGELOG.md)
 
 A crate providing a declarative way for specifying an HTTP endpoint.
 

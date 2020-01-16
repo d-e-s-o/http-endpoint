@@ -35,6 +35,14 @@ pub trait Endpoint {
   /// An error emitted by the API.
   type ApiError: DeserializeOwned + Display;
 
+  /// Retrieve the base URL to use.
+  ///
+  /// By default no URL is provided for the endpoint, in which case it
+  /// is the client's responsibility to supply one.
+  fn base_url() -> Option<Str> {
+    None
+  }
+
   /// Retrieve the HTTP method to use.
   ///
   /// The default method being used is GET.
