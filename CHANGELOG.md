@@ -1,5 +1,5 @@
-Unreleased
-----------
+0.1.1
+-----
 - Added `base_url` method to `Endpoint` trait
 
 
