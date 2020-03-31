@@ -1,5 +1,6 @@
 Unreleased
 ----------
+- Removed `Hyper` variant from `Error` enum
 - Preserved endpoint error message when converting into generic
   `Error::HttpStatus` variant
 

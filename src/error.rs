@@ -9,7 +9,6 @@ use std::str::from_utf8;
 
 use http::Error as HttpError;
 use http::StatusCode as HttpStatusCode;
-use hyper::Error as HyperError;
 use serde_json::Error as JsonError;
 
 
@@ -24,8 +23,6 @@ pub enum Error {
   /// We encountered an HTTP that either represents a failure or is not
   /// supported.
   HttpStatus(HttpStatusCode, Vec<u8>),
-  /// An error reported by the `hyper` crate.
-  Hyper(HyperError),
   /// A JSON conversion error.
   Json(JsonError),
 }
@@ -42,7 +39,6 @@ impl Display for Error {
         }
         Ok(())
       },
-      Error::Hyper(err) => write!(fmt, "{}", err),
       Error::Json(err) => write!(fmt, "{}", err),
     }
   }
@@ -53,7 +49,6 @@ impl StdError for Error {
     match self {
       Error::Http(err) => err.source(),
       Error::HttpStatus(..) => None,
-      Error::Hyper(err) => err.source(),
       Error::Json(err) => err.source(),
     }
   }
@@ -62,12 +57,6 @@ impl StdError for Error {
 impl From<HttpError> for Error {
   fn from(e: HttpError) -> Self {
     Error::Http(e)
-  }
-}
-
-impl From<HyperError> for Error {
-  fn from(e: HyperError) -> Self {
-    Error::Hyper(e)
   }
 }
 

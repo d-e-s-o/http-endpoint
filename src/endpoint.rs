@@ -8,7 +8,6 @@ use http::Method;
 use http::StatusCode;
 
 use hyper::Body;
-use hyper::Error as HyperError;
 
 use serde::de::DeserializeOwned;
 use serde_json::Error as JsonError;
@@ -32,7 +31,7 @@ pub trait Endpoint {
   /// endpoint.
   type Output: DeserializeOwned;
   /// The type of error this endpoint can report.
-  type Error: From<HttpError> + From<HyperError> + From<JsonError>;
+  type Error: From<HttpError> + From<JsonError>;
   /// An error emitted by the API.
   type ApiError: DeserializeOwned + Display;
 
@@ -122,8 +121,6 @@ macro_rules! EndpointDef {
       UnexpectedStatus(::http::StatusCode, Result<$api_err, Vec<u8>>),
       /// An HTTP related error.
       Http(::http::Error),
-      /// An error reported by the `hyper` crate.
-      Hyper(::hyper::Error),
       /// A JSON conversion error.
       Json(::serde_json::Error),
     }
@@ -156,7 +153,6 @@ macro_rules! EndpointDef {
             write!(fmt, "Unexpected HTTP status {}: {}", status, message)
           },
           $err::Http(err) => write!(fmt, "{}", err),
-          $err::Hyper(err) => write!(fmt, "{}", err),
           $err::Json(err) => write!(fmt, "{}", err),
         }
       }
@@ -171,7 +167,6 @@ macro_rules! EndpointDef {
           )*
           $err::UnexpectedStatus(..) => None,
           $err::Http(err) => err.source(),
-          $err::Hyper(err) => err.source(),
           $err::Json(err) => err.source(),
         }
       }
@@ -181,13 +176,6 @@ macro_rules! EndpointDef {
     impl ::std::convert::From<::http::Error> for $err {
       fn from(src: ::http::Error) -> Self {
         $err::Http(src)
-      }
-    }
-
-    #[allow(unused_qualifications)]
-    impl ::std::convert::From<::hyper::Error> for $err {
-      fn from(src: ::hyper::Error) -> Self {
-        $err::Hyper(src)
       }
     }
 
@@ -222,7 +210,6 @@ macro_rules! EndpointDef {
             }
           },
           $err::Http(err) => ::http_endpoint::Error::Http(err),
-          $err::Hyper(err) => ::http_endpoint::Error::Hyper(err),
           $err::Json(err) => ::http_endpoint::Error::Json(err),
         }
       }

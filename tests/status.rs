@@ -12,6 +12,7 @@ use http_endpoint::Str;
 use test_env_log::test;
 
 use common::issue;
+use common::Error;
 
 
 EndpointDef! {
@@ -69,7 +70,7 @@ async fn get_success_status() {
 async fn get_expected_error_status() {
   let err = issue::<GetStatus>(&404).await.unwrap_err();
   match err {
-    GetError::NotFound(err) => {
+    Error::EndpointError(GetError::NotFound(err)) => {
       // The response isn't actually a JSON encoded string. We expect to
       // get back an empty body.
       assert_eq!(err.unwrap_err(), Vec::<u8>::new())
@@ -83,7 +84,7 @@ async fn get_expected_error_status() {
 async fn get_unexpected_error_status() {
   let err = issue::<GetStatus>(&403).await.unwrap_err();
   match err {
-    GetError::UnexpectedStatus(StatusCode::FORBIDDEN, ..) => (),
+    Error::EndpointError(GetError::UnexpectedStatus(StatusCode::FORBIDDEN, ..)) => (),
     _ => panic!("unexpected error: {:?}", err),
   };
 }
@@ -99,7 +100,7 @@ async fn post_success_status() {
 async fn post_expected_error_status() {
   let err = issue::<PostStatus>(&401).await.unwrap_err();
   match err {
-    PostError::Unauthorized(..) => (),
+    Error::EndpointError(PostError::Unauthorized(..)) => (),
     _ => panic!("unexpected error: {:?}", err),
   };
 }

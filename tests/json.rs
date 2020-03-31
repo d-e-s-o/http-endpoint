@@ -22,6 +22,7 @@ use serde_json::to_string as to_json;
 use test_env_log::test;
 
 use common::issue;
+use common::Error;
 
 
 /// Dummy data used for testing JSON deserialization.
@@ -127,7 +128,7 @@ async fn decode_json_error() {
   let json = r#"{ foobar: invalid" }"#;
   let err = issue::<PostPerson>(&json.into()).await.unwrap_err();
   match err {
-    PostError::Json(err) => {
+    Error::EndpointError(PostError::Json(err)) => {
       // httpbin auto-fills the "json" field, but if the JSON is valid
       // there will be nothing. Hence, the error is about a "null" being
       // encountered.
@@ -152,7 +153,7 @@ async fn decode_api_error() {
   let json = to_json(&api_error).unwrap();
   let err = issue::<PostApiError>(&json.into()).await.unwrap_err();
   match err {
-    PostApiErrorError::Ok(err) => assert_eq!(err.unwrap().data, api_error),
+    Error::EndpointError(PostApiErrorError::Ok(err)) => assert_eq!(err.unwrap().data, api_error),
     _ => panic!("unexpected error: {:?}", err),
   }
 }
