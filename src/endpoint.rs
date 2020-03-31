@@ -3,11 +3,12 @@
 
 use std::fmt::Display;
 
+use http::Error as HttpError;
+use http::Method;
+use http::StatusCode;
+
 use hyper::Body;
 use hyper::Error as HyperError;
-use hyper::http::Error as HttpError;
-use hyper::http::StatusCode;
-use hyper::Method;
 
 use serde::de::DeserializeOwned;
 use serde_json::Error as JsonError;
@@ -118,9 +119,9 @@ macro_rules! EndpointDef {
       )*
       /// An HTTP status not present in the endpoint's definition was
       /// encountered.
-      UnexpectedStatus(::hyper::http::StatusCode, Result<$api_err, Vec<u8>>),
+      UnexpectedStatus(::http::StatusCode, Result<$api_err, Vec<u8>>),
       /// An HTTP related error.
-      Http(::hyper::http::Error),
+      Http(::http::Error),
       /// An error reported by the `hyper` crate.
       Hyper(::hyper::Error),
       /// A JSON conversion error.
@@ -145,7 +146,7 @@ macro_rules! EndpointDef {
         match self {
           $(
             $err::$variant(message) => {
-              let status = ::hyper::http::StatusCode::$err_status;
+              let status = ::http::StatusCode::$err_status;
               let message = format_message(message);
               write!(fmt, "HTTP status {}: {}", status, message)
             },
@@ -177,8 +178,8 @@ macro_rules! EndpointDef {
     }
 
     #[allow(unused_qualifications)]
-    impl ::std::convert::From<::hyper::http::Error> for $err {
-      fn from(src: ::hyper::http::Error) -> Self {
+    impl ::std::convert::From<::http::Error> for $err {
+      fn from(src: ::http::Error) -> Self {
         $err::Http(src)
       }
     }
@@ -203,7 +204,7 @@ macro_rules! EndpointDef {
         match src {
           $(
             $err::$variant(_) => {
-              ::http_endpoint::Error::HttpStatus(::hyper::http::StatusCode::$err_status)
+              ::http_endpoint::Error::HttpStatus(::http::StatusCode::$err_status)
             },
           )*
           $err::UnexpectedStatus(status, _) => ::http_endpoint::Error::HttpStatus(status),
@@ -225,12 +226,12 @@ macro_rules! EndpointDef {
 
       #[allow(unused_qualifications)]
       fn evaluate(
-        status: ::hyper::http::StatusCode,
+        status: ::http::StatusCode,
         body: &[u8],
       ) -> Result<$out, $err> {
         match status {
           $(
-            ::hyper::http::StatusCode::$ok_status => {
+            ::http::StatusCode::$ok_status => {
               <$name as ::http_endpoint::Endpoint>::parse(&body)
             },
           )*
@@ -238,7 +239,7 @@ macro_rules! EndpointDef {
             let res = <$name as ::http_endpoint::Endpoint>::parse_err(&body);
             match status {
               $(
-                ::hyper::http::StatusCode::$err_status => {
+                ::http::StatusCode::$err_status => {
                   Err($err::$variant(res))
                 },
               )*

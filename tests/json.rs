@@ -7,8 +7,9 @@ use std::fmt::Display;
 use std::fmt::Formatter;
 use std::fmt::Result as FmtResult;
 
+use http::Method;
+
 use hyper::Body;
-use hyper::Method;
 
 use http_endpoint::EndpointDef;
 use http_endpoint::Str;

@@ -3,8 +3,8 @@
 
 mod common;
 
-use hyper::http::StatusCode;
-use hyper::Method;
+use http::Method;
+use http::StatusCode;
 
 use http_endpoint::EndpointDef;
 use http_endpoint::Str;
