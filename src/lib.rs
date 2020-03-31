@@ -11,3 +11,4 @@ pub use endpoint::Endpoint;
 pub use error::Error;
 
 pub type Str = Cow<'static, str>;
+pub type Bytes = Cow<'static, [u8]>;

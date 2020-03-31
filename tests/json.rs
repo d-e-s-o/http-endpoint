@@ -9,8 +9,7 @@ use std::fmt::Result as FmtResult;
 
 use http::Method;
 
-use hyper::Body;
-
+use http_endpoint::Bytes;
 use http_endpoint::EndpointDef;
 use http_endpoint::Str;
 
@@ -68,8 +67,8 @@ EndpointDef! {
     "/anything".into()
   }
 
-  fn body(input: &Self::Input) -> Result<Body, JsonError> {
-    Ok(Body::from(input.to_string()))
+  fn body(input: &Self::Input) -> Result<Bytes, JsonError> {
+    Ok(input.to_string().into_bytes().into())
   }
 }
 
@@ -104,8 +103,8 @@ EndpointDef! {
     "/anything".into()
   }
 
-  fn body(input: &Self::Input) -> Result<Body, JsonError> {
-    Ok(Body::from(input.to_string()))
+  fn body(input: &Self::Input) -> Result<Bytes, JsonError> {
+    Ok(input.to_string().into_bytes().into())
   }
 }
 

@@ -36,7 +36,7 @@ where
   let request = HttpRequestBuilder::new()
     .method(E::method())
     .uri(url.as_str())
-    .body(E::body(input)?)?;
+    .body(Body::from(E::body(input)?))?;
 
   Ok(request)
 }

@@ -1,18 +1,18 @@
 // Copyright (C) 2019-2020 Daniel Mueller <deso@posteo.net>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+use std::borrow::Cow;
 use std::fmt::Display;
 
 use http::Error as HttpError;
 use http::Method;
 use http::StatusCode;
 
-use hyper::Body;
-
 use serde::de::DeserializeOwned;
 use serde_json::Error as JsonError;
 use serde_json::from_slice;
 
+use crate::Bytes;
 use crate::Str;
 
 
@@ -65,8 +65,8 @@ pub trait Endpoint {
   ///
   /// By default this method creates an empty body.
   #[allow(unused)]
-  fn body(input: &Self::Input) -> Result<Body, JsonError> {
-    Ok(Body::empty())
+  fn body(input: &Self::Input) -> Result<Bytes, JsonError> {
+    Ok(Cow::Borrowed(&[0; 0]))
   }
 
   /// Parse the body into the final result.

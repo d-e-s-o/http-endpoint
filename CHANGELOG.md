@@ -1,6 +1,9 @@
 Unreleased
 ----------
-- Removed `Hyper` variant from `Error` enum
+- Removed dependency on `hyper` crate
+  - Changed `Endpoint::body` method to work with a `Cow<[u8]>` instead
+    of `hyper::Body`
+  - Removed `Hyper` variant from `Error` enum
 - Preserved endpoint error message when converting into generic
   `Error::HttpStatus` variant
 
