@@ -1,3 +1,9 @@
+Unreleased
+----------
+- Preserved endpoint error message when converting into generic
+  `Error::HttpStatus` variant
+
+
 0.1.1
 -----
 - Added `base_url` method to `Endpoint` trait

@@ -203,11 +203,24 @@ macro_rules! EndpointDef {
       fn from(src: $err) -> Self {
         match src {
           $(
-            $err::$variant(_) => {
-              ::http_endpoint::Error::HttpStatus(::http::StatusCode::$err_status)
+            $err::$variant(result) => {
+              let status = ::http::StatusCode::$err_status;
+              match result {
+                Ok(err) => {
+                  ::http_endpoint::Error::HttpStatus(status, err.to_string().into_bytes())
+                },
+                Err(data) => ::http_endpoint::Error::HttpStatus(status, data),
+              }
             },
           )*
-          $err::UnexpectedStatus(status, _) => ::http_endpoint::Error::HttpStatus(status),
+          $err::UnexpectedStatus(status, result) => {
+            match result {
+              Ok(err) => {
+                ::http_endpoint::Error::HttpStatus(status, err.to_string().into_bytes())
+              },
+              Err(data) => ::http_endpoint::Error::HttpStatus(status, data),
+            }
+          },
           $err::Http(err) => ::http_endpoint::Error::Http(err),
           $err::Hyper(err) => ::http_endpoint::Error::Hyper(err),
           $err::Json(err) => ::http_endpoint::Error::Json(err),

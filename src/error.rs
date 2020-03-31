@@ -5,6 +5,7 @@ use std::error::Error as StdError;
 use std::fmt::Display;
 use std::fmt::Formatter;
 use std::fmt::Result as FmtResult;
+use std::str::from_utf8;
 
 use http::Error as HttpError;
 use http::StatusCode as HttpStatusCode;
@@ -22,7 +23,7 @@ pub enum Error {
   Http(HttpError),
   /// We encountered an HTTP that either represents a failure or is not
   /// supported.
-  HttpStatus(HttpStatusCode),
+  HttpStatus(HttpStatusCode, Vec<u8>),
   /// An error reported by the `hyper` crate.
   Hyper(HyperError),
   /// A JSON conversion error.
@@ -33,7 +34,14 @@ impl Display for Error {
   fn fmt(&self, fmt: &mut Formatter<'_>) -> FmtResult {
     match self {
       Error::Http(err) => write!(fmt, "{}", err),
-      Error::HttpStatus(status) => write!(fmt, "HTTP status: {}", status),
+      Error::HttpStatus(status, data) => {
+        write!(fmt, "HTTP status: {}: ", status)?;
+        match from_utf8(&data) {
+          Ok(s) => fmt.write_str(s)?,
+          Err(b) => write!(fmt, "{:?}", b)?,
+        }
+        Ok(())
+      },
       Error::Hyper(err) => write!(fmt, "{}", err),
       Error::Json(err) => write!(fmt, "{}", err),
     }
@@ -54,12 +62,6 @@ impl StdError for Error {
 impl From<HttpError> for Error {
   fn from(e: HttpError) -> Self {
     Error::Http(e)
-  }
-}
-
-impl From<HttpStatusCode> for Error {
-  fn from(e: HttpStatusCode) -> Self {
-    Error::HttpStatus(e)
   }
 }
 
