@@ -1,5 +1,5 @@
-Unreleased
-----------
+0.2.0
+-----
 - Removed dependency on `hyper` crate
   - Changed `Endpoint::body` method to work with a `Cow<[u8]>` instead
     of `hyper::Body`
