@@ -11,6 +11,9 @@ description = """
 Declarative specification of HTTP endpoints.
 """
 
+[badges]
+gitlab = { repository = "d-e-s-o/http-endpoint", branch = "master" }
+
 [dependencies]
 http = {version = "0.2", default-features = false}
 serde = {version = "1.0", default-features = false, features = ["derive"]}

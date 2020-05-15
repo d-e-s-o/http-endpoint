@@ -1,3 +1,10 @@
+Unreleased
+----------
+- Enabled CI pipeline comprising building, testing, and linting of the
+  project
+  - Added badge indicating pipeline status
+
+
 0.2.0
 -----
 - Removed dependency on `hyper` crate
