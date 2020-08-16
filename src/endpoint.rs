@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use std::borrow::Cow;
+use std::error::Error;
+use std::fmt::Debug;
 use std::fmt::Display;
 
 use http::Error as HttpError;
@@ -31,7 +33,7 @@ pub trait Endpoint {
   /// endpoint.
   type Output: DeserializeOwned;
   /// The type of error this endpoint can report.
-  type Error: From<HttpError> + From<JsonError>;
+  type Error: Debug + Display + Error + From<HttpError> + From<JsonError>;
   /// An error emitted by the API.
   type ApiError: DeserializeOwned + Display;
 

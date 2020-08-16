@@ -1,5 +1,7 @@
 Unreleased
 ----------
+- Require `std::fmt::Debug`, `std::fmt::Display`, and
+  `std::error::Error` for `Endpoint::Error` type
 - Enabled CI pipeline comprising building, testing, linting, and
   coverage collection of the project
   - Added badges indicating pipeline status and code coverage percentage
