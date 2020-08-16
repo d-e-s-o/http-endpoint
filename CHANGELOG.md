@@ -1,5 +1,5 @@
-Unreleased
-----------
+0.3.0
+-----
 - Require `std::fmt::Debug`, `std::fmt::Display`, and
   `std::error::Error` for `Endpoint::Error` type
 - Enabled CI pipeline comprising building, testing, linting, and
