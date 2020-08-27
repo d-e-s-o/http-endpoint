@@ -1,5 +1,5 @@
-Unreleased
-----------
+0.4.0
+-----
 - Require `'static` for `Endpoint::Error` type
 
 
