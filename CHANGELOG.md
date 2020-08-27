@@ -1,3 +1,8 @@
+Unreleased
+----------
+- Require `'static` for `Endpoint::Error` type
+
+
 0.3.0
 -----
 - Require `std::fmt::Debug`, `std::fmt::Display`, and
