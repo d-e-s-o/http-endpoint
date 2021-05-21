@@ -4,8 +4,8 @@
 # Official language image. Look for the different tagged releases at:
 # https://hub.docker.com/r/library/rust/tags/
 # The recipe for this docker image can be found at:
-# https://github.com/rust-lang/docker-rust/blob/8d0f25416858e2c1f59511a15c2bd0445b402caa/1.39.0/stretch/Dockerfile
-image: "rust:1.39.0"
+# https://github.com/rust-lang/docker-rust/blob/3dea3da5cb709648d53b2a50ba89aef9c89bdd96/1.46.0/buster/Dockerfile
+image: "rust:1.46.0"
 
 stages:
   - build
@@ -48,7 +48,7 @@ coverage:kcov:
   - echo 'deb http://deb.debian.org/debian unstable main' >> /etc/apt/sources.list
   - apt-get update
   - apt-get install --assume-yes kcov
-  - files=$(find target/debug -maxdepth 1 -type f -executable -iname "*-????????????????");
+  - files=$(find target/debug/deps -maxdepth 1 -type f -executable -iname "*-????????????????");
     covs="";
     for file in ${files}; do
       cov="kcov-$(basename ${file})";

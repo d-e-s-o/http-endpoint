@@ -1,3 +1,8 @@
+Unreleased
+----------
+- Bumped minimum supported Rust version to `1.46`
+
+
 0.4.0
 -----
 - Require `'static` for `Endpoint::Error` type
