@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Daniel Mueller <deso@posteo.net>
+// Copyright (C) 2020-2021 Daniel Mueller <deso@posteo.net>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 mod common;
@@ -135,6 +135,7 @@ async fn decode_json_error() {
         err
           .to_string()
           .starts_with("invalid type: null, expected struct Person"),
+        "{}",
         err,
       )
     },
