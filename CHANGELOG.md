@@ -1,5 +1,7 @@
 Unreleased
 ----------
+- Require `std::error::Error` instead of `std::fmt::Display` for
+  `Endpoint::ApiError` type
 - Bumped minimum supported Rust version to `1.46`
 
 

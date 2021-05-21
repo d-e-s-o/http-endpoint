@@ -35,7 +35,7 @@ pub trait Endpoint {
   /// The type of error this endpoint can report.
   type Error: Debug + Display + Error + From<HttpError> + From<JsonError> + 'static;
   /// An error emitted by the API.
-  type ApiError: DeserializeOwned + Display;
+  type ApiError: Error + DeserializeOwned;
 
   /// Retrieve the base URL to use.
   ///

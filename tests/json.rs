@@ -3,6 +3,7 @@
 
 mod common;
 
+use std::error::Error as StdError;
 use std::fmt::Display;
 use std::fmt::Formatter;
 use std::fmt::Result as FmtResult;
@@ -20,8 +21,11 @@ use serde_json::to_string as to_json;
 
 use test_env_log::test;
 
+use thiserror::Error as ThisError;
+
 use common::issue;
 use common::Error;
+use common::NoError;
 
 
 /// Dummy data used for testing JSON deserialization.
@@ -50,6 +54,8 @@ where
   }
 }
 
+impl<T> StdError for Data<T> where T: StdError {}
+
 
 EndpointDef! {
   PostPerson(Str),
@@ -57,7 +63,7 @@ EndpointDef! {
     /* 200 */ OK,
   ],
   Err => PostError, [],
-  ApiErr => String,
+  ApiErr => NoError,
 
   fn method() -> Method {
     Method::POST
@@ -74,16 +80,11 @@ EndpointDef! {
 
 
 /// Dummy data used for testing JSON deserialization.
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Serialize, ThisError)]
+#[error("{message} ({code})")]
 struct ApiError {
   message: String,
   code: u8,
-}
-
-impl Display for ApiError {
-  fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-    write!(f, "{} ({})", self.message, self.code)
-  }
 }
 
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Daniel Mueller <deso@posteo.net>
+// Copyright (C) 2020-2021 Daniel Mueller <deso@posteo.net>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use std::fmt::Debug;
@@ -13,9 +13,18 @@ use hyper_tls::HttpsConnector;
 
 use http_endpoint::Endpoint;
 
+use serde::Deserialize;
+
+use thiserror::Error;
+
 use url::Url;
 
 const HTTP_BIN_BASE_URL: &str = "https://httpbin.org/";
+
+
+#[derive(Debug, Deserialize, Error, PartialEq)]
+#[error("an unspecified error was encountered")]
+pub struct NoError;
 
 
 #[derive(Debug)]

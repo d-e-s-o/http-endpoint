@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Daniel Mueller <deso@posteo.net>
+// Copyright (C) 2020-2021 Daniel Mueller <deso@posteo.net>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 mod common;
@@ -13,6 +13,7 @@ use test_env_log::test;
 
 use common::issue;
 use common::Error;
+use common::NoError;
 
 
 EndpointDef! {
@@ -23,7 +24,7 @@ EndpointDef! {
   Err => GetError, [
     /* 404 */ NOT_FOUND => NotFound,
   ],
-  ApiErr => String,
+  ApiErr => NoError,
 
   fn path(status: &Self::Input) -> Str {
     format!("/status/{}", status).into()
@@ -43,7 +44,7 @@ EndpointDef! {
   Err => PostError, [
     /* 401 */ UNAUTHORIZED => Unauthorized,
   ],
-  ApiErr => String,
+  ApiErr => NoError,
 
   fn method() -> Method {
     Method::POST
