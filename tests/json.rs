@@ -75,12 +75,12 @@ EndpointDef! {
     "/anything".into()
   }
 
-  fn body(input: &Self::Input) -> Result<Option<Bytes>, Self::Error> {
+  fn body(input: &Self::Input) -> Result<Option<Bytes>, Self::ConversionError> {
     Ok(Some(input.to_string().into_bytes().into()))
   }
 
-  fn parse(body: &[u8]) -> Result<Self::Output, Self::Error> {
-    from_slice::<Self::Output>(body).map_err(Self::Error::from)
+  fn parse(body: &[u8]) -> Result<Self::Output, Self::ConversionError> {
+    from_slice::<Self::Output>(body)
   }
 
   fn parse_err(body: &[u8]) -> Result<Self::ApiError, Vec<u8>> {
@@ -116,12 +116,12 @@ EndpointDef! {
     "/anything".into()
   }
 
-  fn body(input: &Self::Input) -> Result<Option<Bytes>, Self::Error> {
+  fn body(input: &Self::Input) -> Result<Option<Bytes>, Self::ConversionError> {
     Ok(Some(input.to_string().into_bytes().into()))
   }
 
-  fn parse(body: &[u8]) -> Result<Self::Output, Self::Error> {
-    from_slice::<Self::Output>(body).map_err(Self::Error::from)
+  fn parse(body: &[u8]) -> Result<Self::Output, Self::ConversionError> {
+    from_slice::<Self::Output>(body)
   }
 
   fn parse_err(body: &[u8]) -> Result<Self::ApiError, Vec<u8>> {

@@ -31,7 +31,7 @@ EndpointDef! {
     format!("/status/{}", status).into()
   }
 
-  fn parse(_: &[u8]) -> Result<Self::Output, Self::Error> {
+  fn parse(_: &[u8]) -> Result<Self::Output, Self::ConversionError> {
     Ok(())
   }
 
@@ -61,7 +61,7 @@ EndpointDef! {
     format!("/status/{}", status).into()
   }
 
-  fn parse(_: &[u8]) -> Result<Self::Output, Self::Error> {
+  fn parse(_: &[u8]) -> Result<Self::Output, Self::ConversionError> {
     Ok(())
   }
 

@@ -2,6 +2,8 @@ Unreleased
 ----------
 - Removed all JSON specifics, including default parsing functionality
 - Adjusted `Endpoint::body` to return an `Option` on success
+- Adjusted `Endpoint::body` and `Endpoint::parse` to return
+  `Endpoint::ConversionError` on failure
 - Require `std::error::Error` instead of `std::fmt::Display` for
   `Endpoint::ApiError` type
 - Removed `DeserializeOwned` requirement from `Endpoint::Output` and

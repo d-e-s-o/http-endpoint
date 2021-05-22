@@ -62,12 +62,12 @@ pub trait Endpoint {
   ///
   /// By default this method creates an empty body.
   #[allow(unused)]
-  fn body(input: &Self::Input) -> Result<Option<Bytes>, Self::Error> {
+  fn body(input: &Self::Input) -> Result<Option<Bytes>, Self::ConversionError> {
     Ok(None)
   }
 
   /// Parse the body into the final result.
-  fn parse(body: &[u8]) -> Result<Self::Output, Self::Error>;
+  fn parse(body: &[u8]) -> Result<Self::Output, Self::ConversionError>;
 
   /// Parse an API error.
   fn parse_err(body: &[u8]) -> Result<Self::ApiError, Vec<u8>>;
@@ -225,7 +225,7 @@ macro_rules! EndpointDef {
         match status {
           $(
             ::http::StatusCode::$ok_status => {
-              <$name as ::http_endpoint::Endpoint>::parse(&body)
+              <$name as ::http_endpoint::Endpoint>::parse(&body).map_err($err::from)
             },
           )*
           status => {
