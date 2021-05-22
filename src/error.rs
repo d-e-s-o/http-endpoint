@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Daniel Mueller <deso@posteo.net>
+// Copyright (C) 2020-2021 Daniel Mueller <deso@posteo.net>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use std::error::Error as StdError;
@@ -9,7 +9,6 @@ use std::str::from_utf8;
 
 use http::Error as HttpError;
 use http::StatusCode as HttpStatusCode;
-use serde_json::Error as JsonError;
 
 
 /// An error type that any endpoint related error can be converted into.
@@ -17,17 +16,23 @@ use serde_json::Error as JsonError;
 /// Please note that this error type necessarily looses some information
 /// over dealing with the actual endpoint error type.
 #[derive(Debug)]
-pub enum Error {
+pub enum Error<B>
+where
+  B: StdError,
+{
   /// An HTTP related error.
   Http(HttpError),
   /// We encountered an HTTP that either represents a failure or is not
   /// supported.
   HttpStatus(HttpStatusCode, Vec<u8>),
-  /// A JSON conversion error.
-  Json(JsonError),
+  /// Some kind of conversion error was encountered.
+  Conversion(B),
 }
 
-impl Display for Error {
+impl<B> Display for Error<B>
+where
+  B: StdError,
+{
   fn fmt(&self, fmt: &mut Formatter<'_>) -> FmtResult {
     match self {
       Error::Http(err) => write!(fmt, "{}", err),
@@ -39,29 +44,29 @@ impl Display for Error {
         }
         Ok(())
       },
-      Error::Json(err) => write!(fmt, "{}", err),
+      Error::Conversion(err) => write!(fmt, "{}", err),
     }
   }
 }
 
-impl StdError for Error {
+impl<B> StdError for Error<B>
+where
+  B: StdError,
+{
   fn source(&self) -> Option<&(dyn StdError + 'static)> {
     match self {
       Error::Http(err) => err.source(),
       Error::HttpStatus(..) => None,
-      Error::Json(err) => err.source(),
+      Error::Conversion(err) => err.source(),
     }
   }
 }
 
-impl From<HttpError> for Error {
+impl<B> From<HttpError> for Error<B>
+where
+  B: StdError,
+{
   fn from(e: HttpError) -> Self {
     Error::Http(e)
-  }
-}
-
-impl From<JsonError> for Error {
-  fn from(e: JsonError) -> Self {
-    Error::Json(e)
   }
 }

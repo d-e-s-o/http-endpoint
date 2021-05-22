@@ -24,6 +24,7 @@ EndpointDef! {
   Err => GetError, [
     /* 404 */ NOT_FOUND => NotFound,
   ],
+  ConversionErr => NoError,
   ApiErr => NoError,
 
   fn path(status: &Self::Input) -> Str {
@@ -32,6 +33,11 @@ EndpointDef! {
 
   fn parse(_: &[u8]) -> Result<Self::Output, Self::Error> {
     Ok(())
+  }
+
+  fn parse_err(body: &[u8]) -> Result<Self::ApiError, Vec<u8>> {
+    assert_eq!(body, &[0; 0]);
+    Ok(NoError)
   }
 }
 
@@ -44,6 +50,7 @@ EndpointDef! {
   Err => PostError, [
     /* 401 */ UNAUTHORIZED => Unauthorized,
   ],
+  ConversionErr => NoError,
   ApiErr => NoError,
 
   fn method() -> Method {
@@ -56,6 +63,11 @@ EndpointDef! {
 
   fn parse(_: &[u8]) -> Result<Self::Output, Self::Error> {
     Ok(())
+  }
+
+  fn parse_err(body: &[u8]) -> Result<Self::ApiError, Vec<u8>> {
+    assert_eq!(body, &[0; 0]);
+    Ok(NoError)
   }
 }
 
@@ -72,9 +84,7 @@ async fn get_expected_error_status() {
   let err = issue::<GetStatus>(&404).await.unwrap_err();
   match err {
     Error::EndpointError(GetError::NotFound(err)) => {
-      // The response isn't actually a JSON encoded string. We expect to
-      // get back an empty body.
-      assert_eq!(err.unwrap_err(), Vec::<u8>::new())
+      assert_eq!(err.unwrap(), NoError)
     },
     _ => panic!("unexpected error: {:?}", err),
   };

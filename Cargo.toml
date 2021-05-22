@@ -17,12 +17,12 @@ gitlab = { repository = "d-e-s-o/http-endpoint", branch = "master" }
 [dependencies]
 http = {version = "0.2", default-features = false}
 serde = {version = "1.0", default-features = false, features = ["derive"]}
-serde_json = {version = "1.0.45", default-features = false, features = ["std"]}
 
 [dev-dependencies]
 env_logger = {version = "0.7", default-features = false}
 hyper = {version = "0.14", default-features = false, features = ["client", "http1", "tcp"]}
 hyper-tls = {version = "0.5", default-features = false}
+serde_json = {version = "1.0.45", default-features = false, features = ["std"]}
 test-env-log = {version = "0.2", default-features = false}
 thiserror = {version = "1.0"}
 tokio = {version = "1.0", default-features = false, features = ["rt", "macros"]}

@@ -8,8 +8,6 @@ use http::Method;
 use http::StatusCode;
 
 use serde::de::DeserializeOwned;
-use serde_json::Error as JsonError;
-use serde_json::from_slice;
 
 use crate::Bytes;
 use crate::Str;
@@ -30,7 +28,9 @@ pub trait Endpoint {
   /// endpoint.
   type Output: DeserializeOwned;
   /// The type of error this endpoint can report.
-  type Error: Error + From<HttpError> + From<JsonError> + 'static;
+  type Error: Error + From<HttpError> + From<Self::ConversionError> + 'static;
+  /// An error emitted when converting between formats.
+  type ConversionError: Error;
   /// An error emitted by the API.
   type ApiError: Error + DeserializeOwned;
 
@@ -64,21 +64,15 @@ pub trait Endpoint {
   ///
   /// By default this method creates an empty body.
   #[allow(unused)]
-  fn body(input: &Self::Input) -> Result<Option<Bytes>, JsonError> {
+  fn body(input: &Self::Input) -> Result<Option<Bytes>, Self::Error> {
     Ok(None)
   }
 
   /// Parse the body into the final result.
-  ///
-  /// By default this method directly parses the body as JSON.
-  fn parse(body: &[u8]) -> Result<Self::Output, Self::Error> {
-    from_slice::<Self::Output>(body).map_err(Self::Error::from)
-  }
+  fn parse(body: &[u8]) -> Result<Self::Output, Self::Error>;
 
   /// Parse an API error.
-  fn parse_err(body: &[u8]) -> Result<Self::ApiError, Vec<u8>> {
-    from_slice::<Self::ApiError>(body).map_err(|_| body.to_vec())
-  }
+  fn parse_err(body: &[u8]) -> Result<Self::ApiError, Vec<u8>>;
 
   /// Evaluate an HTTP status and body, converting it into an output or
   /// error, depending on the status.
@@ -99,6 +93,7 @@ macro_rules! EndpointDef {
     // nowhere we can put it.
     Ok => $out:ty, [$($(#[$ok_docs:meta])* $ok_status:ident,)*],
     Err => $err:ident, [$($(#[$err_docs:meta])* $err_status:ident => $variant:ident,)*],
+    ConversionErr => $conv_err:ty,
     ApiErr => $api_err:ty,
     $($defs:tt)* ) => {
 
@@ -120,8 +115,8 @@ macro_rules! EndpointDef {
       UnexpectedStatus(::http::StatusCode, Result<$api_err, Vec<u8>>),
       /// An HTTP related error.
       Http(::http::Error),
-      /// A JSON conversion error.
-      Json(::serde_json::Error),
+      /// Some kind of conversion error was encountered.
+      Conversion($conv_err),
     }
 
     #[allow(unused_qualifications)]
@@ -152,7 +147,7 @@ macro_rules! EndpointDef {
             write!(fmt, "Unexpected HTTP status {}: {}", status, message)
           },
           $err::Http(err) => write!(fmt, "{}", err),
-          $err::Json(err) => write!(fmt, "{}", err),
+          $err::Conversion(err) => write!(fmt, "{}", err),
         }
       }
     }
@@ -166,7 +161,7 @@ macro_rules! EndpointDef {
           )*
           $err::UnexpectedStatus(..) => None,
           $err::Http(err) => err.source(),
-          $err::Json(err) => err.source(),
+          $err::Conversion(err) => err.source(),
         }
       }
     }
@@ -179,14 +174,14 @@ macro_rules! EndpointDef {
     }
 
     #[allow(unused_qualifications)]
-    impl ::std::convert::From<::serde_json::Error> for $err {
-      fn from(src: ::serde_json::Error) -> Self {
-        $err::Json(src)
+    impl ::std::convert::From<$conv_err> for $err {
+      fn from(src: $conv_err) -> Self {
+        $err::Conversion(src)
       }
     }
 
     #[allow(unused_qualifications)]
-    impl ::std::convert::From<$err> for ::http_endpoint::Error {
+    impl ::std::convert::From<$err> for ::http_endpoint::Error<$conv_err> {
       fn from(src: $err) -> Self {
         match src {
           $(
@@ -209,7 +204,7 @@ macro_rules! EndpointDef {
             }
           },
           $err::Http(err) => ::http_endpoint::Error::Http(err),
-          $err::Json(err) => ::http_endpoint::Error::Json(err),
+          $err::Conversion(err) => ::http_endpoint::Error::Conversion(err),
         }
       }
     }
@@ -219,6 +214,7 @@ macro_rules! EndpointDef {
       type Input = $in;
       type Output = $out;
       type Error = $err;
+      type ConversionError = $conv_err;
       type ApiError = $api_err;
 
       $($defs)*

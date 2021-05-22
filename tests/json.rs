@@ -16,8 +16,9 @@ use http_endpoint::Str;
 
 use serde::Deserialize;
 use serde::Serialize;
-use serde_json::Error as JsonError;
+use serde_json::from_slice;
 use serde_json::to_string as to_json;
+use serde_json::Error as JsonError;
 
 use test_env_log::test;
 
@@ -63,6 +64,7 @@ EndpointDef! {
     /* 200 */ OK,
   ],
   Err => PostError, [],
+  ConversionErr => JsonError,
   ApiErr => NoError,
 
   fn method() -> Method {
@@ -73,8 +75,17 @@ EndpointDef! {
     "/anything".into()
   }
 
-  fn body(input: &Self::Input) -> Result<Option<Bytes>, JsonError> {
+  fn body(input: &Self::Input) -> Result<Option<Bytes>, Self::Error> {
     Ok(Some(input.to_string().into_bytes().into()))
+  }
+
+  fn parse(body: &[u8]) -> Result<Self::Output, Self::Error> {
+    from_slice::<Self::Output>(body).map_err(Self::Error::from)
+  }
+
+  fn parse_err(body: &[u8]) -> Result<Self::ApiError, Vec<u8>> {
+    assert_eq!(body, &[0; 0]);
+    Ok(NoError)
   }
 }
 
@@ -94,6 +105,7 @@ EndpointDef! {
   Err => PostApiErrorError, [
     /* 200 */ OK => Ok,
   ],
+  ConversionErr => JsonError,
   ApiErr => Data<ApiError>,
 
   fn method() -> Method {
@@ -104,8 +116,16 @@ EndpointDef! {
     "/anything".into()
   }
 
-  fn body(input: &Self::Input) -> Result<Option<Bytes>, JsonError> {
+  fn body(input: &Self::Input) -> Result<Option<Bytes>, Self::Error> {
     Ok(Some(input.to_string().into_bytes().into()))
+  }
+
+  fn parse(body: &[u8]) -> Result<Self::Output, Self::Error> {
+    from_slice::<Self::Output>(body).map_err(Self::Error::from)
+  }
+
+  fn parse_err(body: &[u8]) -> Result<Self::ApiError, Vec<u8>> {
+    from_slice::<Self::ApiError>(body).map_err(|_| body.to_vec())
   }
 }
 
@@ -128,7 +148,7 @@ async fn decode_json_error() {
   let json = r#"{ foobar: invalid" }"#;
   let err = issue::<PostPerson>(&json.into()).await.unwrap_err();
   match err {
-    Error::EndpointError(PostError::Json(err)) => {
+    Error::EndpointError(PostError::Conversion(err)) => {
       // httpbin auto-fills the "json" field, but if the JSON is valid
       // there will be nothing. Hence, the error is about a "null" being
       // encountered.
