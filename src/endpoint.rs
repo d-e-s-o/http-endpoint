@@ -7,8 +7,6 @@ use http::Error as HttpError;
 use http::Method;
 use http::StatusCode;
 
-use serde::de::DeserializeOwned;
-
 use crate::Bytes;
 use crate::Str;
 
@@ -26,13 +24,13 @@ pub trait Endpoint {
   type Input;
   /// The type of data being returned in the response from this
   /// endpoint.
-  type Output: DeserializeOwned;
+  type Output;
   /// The type of error this endpoint can report.
   type Error: Error + From<HttpError> + From<Self::ConversionError> + 'static;
   /// An error emitted when converting between formats.
   type ConversionError: Error;
   /// An error emitted by the API.
-  type ApiError: Error + DeserializeOwned;
+  type ApiError: Error;
 
   /// Retrieve the base URL to use.
   ///

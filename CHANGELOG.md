@@ -4,6 +4,8 @@ Unreleased
 - Adjusted `Endpoint::body` to return an `Option` on success
 - Require `std::error::Error` instead of `std::fmt::Display` for
   `Endpoint::ApiError` type
+- Removed `DeserializeOwned` requirement from `Endpoint::Output` and
+  `Endpoint::ApiError` types
 - Bumped minimum supported Rust version to `1.46`
 
 
