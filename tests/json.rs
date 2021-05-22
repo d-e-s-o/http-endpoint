@@ -3,11 +3,16 @@
 
 mod common;
 
+use std::collections::HashMap;
 use std::error::Error as StdError;
 use std::fmt::Display;
 use std::fmt::Formatter;
 use std::fmt::Result as FmtResult;
+use std::str::FromStr as _;
 
+use http::header::HeaderMap;
+use http::header::HeaderName;
+use http::header::HeaderValue;
 use http::Method;
 
 use http_endpoint::Bytes;
@@ -130,6 +135,45 @@ EndpointDef! {
 }
 
 
+#[derive(Debug, Deserialize)]
+struct Headers {
+  #[serde(rename = "headers")]
+  headers: HashMap<String, String>,
+}
+
+
+EndpointDef! {
+  GetHeaders(Vec<(&'static str, &'static str)>),
+  Ok => Headers, [
+    /* 200 */ OK,
+  ],
+  Err => GetError, [],
+  ConversionErr => JsonError,
+  ApiErr => NoError,
+
+  fn path(_: &Self::Input) -> Str {
+    "/headers".into()
+  }
+
+  fn headers(input: &Self::Input) -> Result<Option<HeaderMap>, Self::ConversionError> {
+    let mut headers = HeaderMap::with_capacity(input.len());
+    for (key, value) in input {
+      headers.append(HeaderName::from_str(key).unwrap(), HeaderValue::from_str(value).unwrap());
+    }
+    Ok(Some(headers))
+  }
+
+  fn parse(body: &[u8]) -> Result<Self::Output, Self::ConversionError> {
+    from_slice::<Self::Output>(body)
+  }
+
+  fn parse_err(body: &[u8]) -> Result<Self::ApiError, Vec<u8>> {
+    assert_eq!(body, &[0; 0]);
+    Ok(NoError)
+  }
+}
+
+
 /// Test decoding of a JSON formatted response.
 #[test(tokio::test)]
 async fn decode_json() {
@@ -177,4 +221,14 @@ async fn decode_api_error() {
     Error::EndpointError(PostApiErrorError::Ok(err)) => assert_eq!(err.unwrap().data, api_error),
     _ => panic!("unexpected error: {:?}", err),
   }
+}
+
+/// Check that request headers are honored properly.
+#[test(tokio::test)]
+async fn request_headers() {
+  let headers = vec![("Foobar", "foobaz"), ("Another", "header")];
+  let response = issue::<GetHeaders>(&headers).await.unwrap();
+  assert_eq!(response.headers.get("Another").unwrap(), "header");
+  assert_eq!(response.headers.get("Foobar").unwrap(), "foobaz");
+  assert_eq!(response.headers.get("Foobaz"), None);
 }

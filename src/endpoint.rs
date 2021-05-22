@@ -4,6 +4,7 @@
 use std::error::Error;
 
 use http::Error as HttpError;
+use http::HeaderMap;
 use http::Method;
 use http::StatusCode;
 
@@ -55,6 +56,12 @@ pub trait Endpoint {
   /// By default no query is emitted.
   #[allow(unused)]
   fn query(input: &Self::Input) -> Result<Option<Str>, Self::ConversionError> {
+    Ok(None)
+  }
+
+  /// Gather the request headers to set.
+  #[allow(unused)]
+  fn headers(input: &Self::Input) -> Result<Option<HeaderMap>, Self::ConversionError> {
     Ok(None)
   }
 

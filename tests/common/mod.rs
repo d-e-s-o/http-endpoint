@@ -43,13 +43,17 @@ where
   url.set_path(&E::path(&input));
   url.set_query(E::query(&input)?.as_ref().map(AsRef::as_ref));
 
-  let request = HttpRequestBuilder::new()
+  let headers = E::headers(&input)?;
+  let mut request = HttpRequestBuilder::new()
     .method(E::method())
     .uri(url.as_str())
     .body(Body::from(
       E::body(input)?.unwrap_or_else(|| Cow::Borrowed(&[0; 0])),
     ))?;
 
+  if let Some(headers) = headers {
+    request.headers_mut().extend(headers.into_iter());
+  }
   Ok(request)
 }
 

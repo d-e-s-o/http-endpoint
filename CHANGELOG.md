@@ -1,6 +1,8 @@
 Unreleased
 ----------
 - Removed all JSON specifics, including default parsing functionality
+- Added support for providing per-endpoint headers through new
+  `Endpoint::headers` method
 - Adjusted `Endpoint::body` to return an `Option` on success
 - Adjusted `Endpoint::body` and `Endpoint::parse` to return
   `Endpoint::ConversionError` on failure
