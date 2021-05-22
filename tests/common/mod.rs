@@ -1,6 +1,7 @@
 // Copyright (C) 2020-2021 Daniel Mueller <deso@posteo.net>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+use std::borrow::Cow;
 use std::fmt::Debug;
 
 use hyper::Body;
@@ -45,7 +46,9 @@ where
   let request = HttpRequestBuilder::new()
     .method(E::method())
     .uri(url.as_str())
-    .body(Body::from(E::body(input)?))?;
+    .body(Body::from(
+      E::body(input)?.unwrap_or_else(|| Cow::Borrowed(&[0; 0])),
+    ))?;
 
   Ok(request)
 }

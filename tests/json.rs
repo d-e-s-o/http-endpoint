@@ -73,8 +73,8 @@ EndpointDef! {
     "/anything".into()
   }
 
-  fn body(input: &Self::Input) -> Result<Bytes, JsonError> {
-    Ok(input.to_string().into_bytes().into())
+  fn body(input: &Self::Input) -> Result<Option<Bytes>, JsonError> {
+    Ok(Some(input.to_string().into_bytes().into()))
   }
 }
 
@@ -104,8 +104,8 @@ EndpointDef! {
     "/anything".into()
   }
 
-  fn body(input: &Self::Input) -> Result<Bytes, JsonError> {
-    Ok(input.to_string().into_bytes().into())
+  fn body(input: &Self::Input) -> Result<Option<Bytes>, JsonError> {
+    Ok(Some(input.to_string().into_bytes().into()))
   }
 }
 

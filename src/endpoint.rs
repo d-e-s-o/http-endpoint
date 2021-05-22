@@ -1,7 +1,6 @@
 // Copyright (C) 2019-2021 Daniel Mueller <deso@posteo.net>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use std::borrow::Cow;
 use std::error::Error;
 
 use http::Error as HttpError;
@@ -65,8 +64,8 @@ pub trait Endpoint {
   ///
   /// By default this method creates an empty body.
   #[allow(unused)]
-  fn body(input: &Self::Input) -> Result<Bytes, JsonError> {
-    Ok(Cow::Borrowed(&[0; 0]))
+  fn body(input: &Self::Input) -> Result<Option<Bytes>, JsonError> {
+    Ok(None)
   }
 
   /// Parse the body into the final result.
