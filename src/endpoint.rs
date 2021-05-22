@@ -54,8 +54,8 @@ pub trait Endpoint {
   ///
   /// By default no query is emitted.
   #[allow(unused)]
-  fn query(input: &Self::Input) -> Option<Str> {
-    None
+  fn query(input: &Self::Input) -> Result<Option<Str>, Self::ConversionError> {
+    Ok(None)
   }
 
   /// Retrieve the request's body.

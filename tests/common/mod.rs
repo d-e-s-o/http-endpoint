@@ -41,7 +41,7 @@ where
 {
   let mut url = Url::parse(HTTP_BIN_BASE_URL).unwrap();
   url.set_path(&E::path(&input));
-  url.set_query(E::query(&input).as_ref().map(AsRef::as_ref));
+  url.set_query(E::query(&input)?.as_ref().map(AsRef::as_ref));
 
   let request = HttpRequestBuilder::new()
     .method(E::method())
