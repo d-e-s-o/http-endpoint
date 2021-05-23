@@ -1,5 +1,5 @@
-Unreleased
-----------
+0.5.0
+-----
 - Removed all JSON specifics, including default parsing functionality
 - Added support for providing per-endpoint headers through new
   `Endpoint::headers` method
