@@ -11,6 +11,7 @@ Unreleased
   `Endpoint::ApiError` type
 - Removed `DeserializeOwned` requirement from `Endpoint::Output` and
   `Endpoint::ApiError` types
+- Removed `serde` dependency
 - Bumped minimum supported Rust version to `1.46`
 
 
