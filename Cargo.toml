@@ -20,7 +20,9 @@ hyper = {version = "0.14", default-features = false, features = ["client", "http
 hyper-tls = {version = "0.5", default-features = false}
 serde = {version = "1.0", default-features = false, features = ["derive"]}
 serde_json = {version = "1.0.45", default-features = false, features = ["std"]}
-test-env-log = {version = "0.2", default-features = false}
+test-log = {version = "0.2.8", features = ["log", "trace"]}
 thiserror = {version = "1.0"}
 tokio = {version = "1.0", default-features = false, features = ["rt", "macros"]}
+tracing = {version = "0.1", default-features = false}
+tracing-subscriber = {version = "0.3", default-features = false, features = ["env-filter", "fmt"]}
 url = {version = "2.0", default-features = false}

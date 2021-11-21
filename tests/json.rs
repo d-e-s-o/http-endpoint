@@ -25,7 +25,7 @@ use serde_json::from_slice;
 use serde_json::to_string as to_json;
 use serde_json::Error as JsonError;
 
-use test_env_log::test;
+use test_log::test;
 
 use thiserror::Error as ThisError;
 
