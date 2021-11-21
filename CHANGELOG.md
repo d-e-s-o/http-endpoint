@@ -1,3 +1,8 @@
+Unreleased
+----------
+- Switched from using `test-env-log` to `test-log`
+
+
 0.5.0
 -----
 - Removed all JSON specifics, including default parsing functionality

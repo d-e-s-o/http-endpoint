@@ -9,7 +9,7 @@ use http::StatusCode;
 use http_endpoint::EndpointDef;
 use http_endpoint::Str;
 
-use test_env_log::test;
+use test_log::test;
 
 use common::issue;
 use common::Error;
