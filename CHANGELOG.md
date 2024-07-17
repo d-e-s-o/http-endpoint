@@ -1,5 +1,6 @@
 Unreleased
 ----------
+- Switched to using GitHub Actions as CI provider
 - Switched from using `test-env-log` to `test-log`
 
 
