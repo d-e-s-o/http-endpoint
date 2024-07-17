@@ -1,4 +1,4 @@
-// Copyright (C) 2020-2021 Daniel Mueller <deso@posteo.net>
+// Copyright (C) 2020-2024 Daniel Mueller <deso@posteo.net>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use std::error::Error as StdError;
@@ -38,7 +38,7 @@ where
       Error::Http(err) => write!(fmt, "{}", err),
       Error::HttpStatus(status, data) => {
         write!(fmt, "HTTP status: {}: ", status)?;
-        match from_utf8(&data) {
+        match from_utf8(data) {
           Ok(s) => fmt.write_str(s)?,
           Err(b) => write!(fmt, "{:?}", b)?,
         }
