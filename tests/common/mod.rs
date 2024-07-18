@@ -30,9 +30,9 @@ pub struct NoError;
 
 #[derive(Debug)]
 pub enum Error<E> {
-  EndpointError(E),
+  Endpoint(E),
   #[allow(dead_code)]
-  HyperError(HyperError),
+  Hyper(HyperError),
 }
 
 
@@ -63,13 +63,11 @@ where
   E: Endpoint,
 {
   let client = HttpClient::builder().build(HttpsConnector::new());
-  let request = request::<E>(input).map_err(Error::EndpointError)?;
-  let result = client.request(request).await.map_err(Error::HyperError)?;
+  let request = request::<E>(input).map_err(Error::Endpoint)?;
+  let result = client.request(request).await.map_err(Error::Hyper)?;
   let status = result.status();
-  let bytes = to_bytes(result.into_body())
-    .await
-    .map_err(Error::HyperError)?;
+  let bytes = to_bytes(result.into_body()).await.map_err(Error::Hyper)?;
   let body = bytes.as_ref();
-  let output = E::evaluate(status, body).map_err(Error::EndpointError)?;
+  let output = E::evaluate(status, body).map_err(Error::Endpoint)?;
   Ok(output)
 }

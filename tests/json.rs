@@ -1,4 +1,4 @@
-// Copyright (C) 2020-2021 Daniel Mueller <deso@posteo.net>
+// Copyright (C) 2020-2024 Daniel Mueller <deso@posteo.net>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 mod common;
@@ -192,7 +192,7 @@ async fn decode_json_error() {
   let json = r#"{ foobar: invalid" }"#;
   let err = issue::<PostPerson>(&json.into()).await.unwrap_err();
   match err {
-    Error::EndpointError(PostError::Conversion(err)) => {
+    Error::Endpoint(PostError::Conversion(err)) => {
       // httpbin auto-fills the "json" field, but if the JSON is valid
       // there will be nothing. Hence, the error is about a "null" being
       // encountered.
@@ -218,7 +218,7 @@ async fn decode_api_error() {
   let json = to_json(&api_error).unwrap();
   let err = issue::<PostApiError>(&json.into()).await.unwrap_err();
   match err {
-    Error::EndpointError(PostApiErrorError::Ok(err)) => assert_eq!(err.unwrap().data, api_error),
+    Error::Endpoint(PostApiErrorError::Ok(err)) => assert_eq!(err.unwrap().data, api_error),
     _ => panic!("unexpected error: {:?}", err),
   }
 }

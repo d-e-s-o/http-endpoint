@@ -1,4 +1,4 @@
-// Copyright (C) 2020-2021 Daniel Mueller <deso@posteo.net>
+// Copyright (C) 2020-2024 Daniel Mueller <deso@posteo.net>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 mod common;
@@ -83,7 +83,7 @@ async fn get_success_status() {
 async fn get_expected_error_status() {
   let err = issue::<GetStatus>(&404).await.unwrap_err();
   match err {
-    Error::EndpointError(GetError::NotFound(err)) => {
+    Error::Endpoint(GetError::NotFound(err)) => {
       assert_eq!(err.unwrap(), NoError)
     },
     _ => panic!("unexpected error: {:?}", err),
@@ -95,7 +95,7 @@ async fn get_expected_error_status() {
 async fn get_unexpected_error_status() {
   let err = issue::<GetStatus>(&403).await.unwrap_err();
   match err {
-    Error::EndpointError(GetError::UnexpectedStatus(StatusCode::FORBIDDEN, ..)) => (),
+    Error::Endpoint(GetError::UnexpectedStatus(StatusCode::FORBIDDEN, ..)) => (),
     _ => panic!("unexpected error: {:?}", err),
   };
 }
@@ -111,7 +111,7 @@ async fn post_success_status() {
 async fn post_expected_error_status() {
   let err = issue::<PostStatus>(&401).await.unwrap_err();
   match err {
-    Error::EndpointError(PostError::Unauthorized(..)) => (),
+    Error::Endpoint(PostError::Unauthorized(..)) => (),
     _ => panic!("unexpected error: {:?}", err),
   };
 }
