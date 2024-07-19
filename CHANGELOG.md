@@ -1,5 +1,6 @@
 Unreleased
 ----------
+- Updated `http` dependency to `1.0`
 - Switched to using GitHub Actions as CI provider
 - Switched from using `test-env-log` to `test-log`
 
