@@ -70,3 +70,30 @@ where
     Error::Http(e)
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+
+  /// Check behavior of error related functionality.
+  #[test]
+  fn error() {
+    let invalid_status = HttpStatusCode::from_u16(u16::MAX).unwrap_err();
+    let err = Error::<HttpError>::Http(HttpError::from(invalid_status));
+    assert_ne!(err.to_string(), "");
+    let src = err.source();
+    assert!(src.is_some(), "{src:?}");
+
+    let invalid_status = HttpStatusCode::from_u16(u16::MAX).unwrap_err();
+    let err = Error::Conversion(HttpError::from(invalid_status));
+    assert_ne!(err.to_string(), "");
+    let src = err.source();
+    assert!(src.is_some(), "{src:?}");
+
+    let err = Error::<HttpError>::HttpStatus(HttpStatusCode::NOT_FOUND, Vec::new());
+    assert_ne!(err.to_string(), "");
+    let src = err.source();
+    assert!(src.is_none(), "{src:?}");
+  }
+}
