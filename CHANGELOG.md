@@ -3,6 +3,7 @@ Unreleased
 - Updated `http` dependency to `1.0`
 - Switched to using GitHub Actions as CI provider
 - Switched from using `test-env-log` to `test-log`
+- Bumped minimum supported Rust version to `1.61`
 
 
 0.5.0

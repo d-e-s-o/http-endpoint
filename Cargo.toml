@@ -2,7 +2,7 @@
 name = "http-endpoint"
 version = "0.5.0"
 authors = ["Daniel Mueller <deso@posteo.net>"]
-edition = "2018"
+edition = "2021"
 license = "GPL-3.0-or-later"
 homepage = "https://github.com/d-e-s-o/http-endpoint"
 repository = "https://github.com/d-e-s-o/http-endpoint.git"
@@ -12,7 +12,7 @@ Declarative specification of HTTP endpoints.
 """
 
 [dependencies]
-http = {version = "1.1", default-features = false}
+http = {version = "1.1", default-features = false, features = ["std"]}
 
 [dev-dependencies]
 http-body-util = {version = "0.1", default-features = false}
